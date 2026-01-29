@@ -307,52 +307,63 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
   };
 
   return (
-    <div className="w-full rounded-xl bg-black/60 border border-white/10 p-4 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.05)] flex gap-4 transition-all hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-      {/* Album Art */}
-      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 shadow-lg group">
-        <img src={songImage} alt="Album Art" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+    <div className="w-full rounded-lg bg-white/5 border border-white/10 p-3 backdrop-blur-md flex gap-3">
+      {/* Album Art (Spinning) */}
+      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-white/10">
+        <img
+          src={songImage}
+          alt="Album Art"
+          className="h-full w-full object-cover animate-[spin_4s_linear_infinite]"
+          style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
+        />
       </div>
 
       {/* Player Content */}
-      <div className="flex flex-1 flex-col justify-center gap-2">
-        {/* Top Row: Info & Controls */}
-        <div className="flex items-start justify-between">
-          <div className="overflow-hidden pr-2">
-            <div className="relative">
-              <p className={`text-sm font-bold text-white tracking-wide truncate ${isPlaying ? 'animate-pulse' : ''}`}>SHAKE SUM</p>
-            </div>
-            <p className="text-xs text-white/60 truncate hover:text-white/80 transition-colors cursor-default">Cutty Vibez</p>
+      <div className="flex flex-1 flex-col justify-center gap-1">
+        {/* Song Info & Controls */}
+        <div className="mb-1 flex items-center justify-between">
+          <div className="overflow-hidden">
+            <p className="text-xs font-bold text-white/90 truncate">SHAKE SUM</p>
+            <p className="text-[10px] text-white/50 truncate">Cutty Vibez</p>
           </div>
 
-          {/* Playback Controls */}
-          <div className="flex items-center gap-3">
+          {/* Controls */}
+          <div className="flex items-center gap-3 text-white/80">
+            <button className="hover:text-white transition-colors">
+              <FaBackward size={10} />
+            </button>
+
             <button
               onClick={togglePlay}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all active:scale-95"
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black hover:scale-105 transition-transform"
             >
-              {isPlaying ? <FaPause size={10} /> : <FaPlay size={10} className="ml-0.5" />}
+              {isPlaying ? <FaPause size={8} /> : <FaPlay size={8} className="ml-0.5" />}
+            </button>
+
+            <button className="hover:text-white transition-colors">
+              <FaForward size={10} />
             </button>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="flex items-center gap-2 group">
-          <span className="text-[9px] text-white/40 font-mono w-7 text-right group-hover:text-white/80 transition-colors">{formatTime(currentTime)}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] text-white/50 font-mono w-6 text-right">{formatTime(currentTime)}</span>
           <input
             type="range"
             min="0"
             max="100"
             value={progress || 0}
             onChange={handleSeek}
-            className="range-sm flex-1"
+            className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-white/20 accent-white hover:bg-white/30 transition-colors"
           />
-          <span className="text-[9px] text-white/40 font-mono w-7 group-hover:text-white/80 transition-colors">{formatTime(duration)}</span>
+          <span className="text-[9px] text-white/50 font-mono w-6">{formatTime(duration)}</span>
         </div>
 
-        {/* Volume Control (Mini) */}
-        <div className="flex items-center gap-2 mt-1">
-          <button onClick={toggleMute} className="text-white/50 hover:text-white transition-colors">
-            {isMuted || volume === 0 ? <FaVolumeMute size={10} /> : <FaVolumeUp size={10} />}
+        {/* Volume Control (Integrated) */}
+        <div className="flex items-center justify-end gap-1.5 mt-0.5">
+          <button onClick={toggleMute} className="text-white/40 hover:text-white transition-colors">
+            {isMuted || volume === 0 ? <FaVolumeMute size={8} /> : <FaVolumeUp size={8} />}
           </button>
           <input
             type="range"
@@ -361,7 +372,7 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
             step="0.01"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="range-sm w-16 opacity-50 hover:opacity-100 transition-opacity"
+            className="h-1 w-12 cursor-pointer appearance-none rounded-full bg-white/10 accent-white hover:bg-white/20 transition-colors"
           />
         </div>
       </div>
