@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaDiscord, 
-  FaGithub, 
-  FaTelegramPlane, 
+import {
+  FaDiscord,
+  FaGithub,
+  FaTelegramPlane,
   FaSpotify,
   FaFacebook,
   FaInstagram,
@@ -28,7 +28,7 @@ const BG_IMAGE_URL = "https://images.unsplash.com/photo-1533134486753-c833f0ed48
 const PROFILE_AVATAR_URL = "https://cdn.discordapp.com/avatars/623142760240775168/76dc609952bafba97b5547809966a174.webp";
 
 // 3. Audio Source URL (mp3 file)
-const AUDIO_URL = shakeSum; 
+const AUDIO_URL = shakeSum;
 
 // 4. Song Image URL (Album Art)
 const SONG_IMAGE_URL = "https://static.qobuz.com/images/covers/ib/hy/jsing19kfhyib_600.jpg";
@@ -50,11 +50,11 @@ export function App() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-black text-white font-mono selection:bg-white selection:text-black">
       {/* Background with overlay */}
-      <div 
+      <div
         className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 grayscale-[50%]"
         style={{ backgroundImage: `url(${BG_IMAGE_URL})` }}
       />
-      
+
       {/* Moving gradient mesh / fog effect overlay */}
       <div className="fixed inset-0 z-0 bg-gradient-to-t from-black via-transparent to-black opacity-80" />
       <div className="fixed inset-0 z-0 bg-black/60" />
@@ -69,10 +69,10 @@ export function App() {
           <Profile key="profile" audioRef={audioRef} />
         )}
       </AnimatePresence>
-      
+
       {/* Corner UID / View Counter Mock */}
       {entered && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1 }}
@@ -115,18 +115,18 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
       transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
     >
       <div className="w-full max-w-md rounded-xl border border-white/10 bg-black/40 p-6 backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-        
+
         {/* Profile Header */}
         <div className="flex flex-col items-center">
           <div className="relative mb-4">
-            <motion.div 
+            <motion.div
               className="absolute -inset-1 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 opacity-75 blur"
               animate={{ rotate: 360 }}
               transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
             />
-            <img 
-              src={PROFILE_AVATAR_URL} 
-              alt="Avatar" 
+            <img
+              src={PROFILE_AVATAR_URL}
+              alt="Avatar"
               className="relative h-32 w-32 rounded-full border-2 border-white/20 object-cover shadow-2xl"
             />
             {/* Status Indicator */}
@@ -135,12 +135,9 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
 
           <div className="text-center space-y-2">
             <h1 className="flex items-center justify-center gap-2 text-3xl font-bold text-white drop-shadow-md">
-              ahmedaj
-              <span className="rounded bg-violet-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-300 border border-violet-500/30">
-                Verified
-              </span>
+              Ahmed Ajena
             </h1>
-            
+
             <div className="h-6 text-sm text-gray-300">
               <TypeAnimation
                 sequence={[
@@ -158,7 +155,7 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
                 repeat={Infinity}
               />
             </div>
-            
+
             <p className="mt-2 px-4 text-xs italic text-white/50">
               "Building things for the web. Breaking things for fun."
             </p>
@@ -183,10 +180,10 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
         <div className="mt-8">
           <SoundPlayer audioRef={audioRef} songImage={SONG_IMAGE_URL} />
         </div>
-        
+
         {/* Footer */}
         <div className="mt-6 text-center text-[10px] text-white/20">
-          © 2024 ahmedaj. All rights reserved.
+          © 2025 ahmedAJ512. All rights reserved.
         </div>
       </div>
     </motion.div>
@@ -195,7 +192,7 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
 
 function SocialLink({ href, icon, label, color }: { href: string; icon: React.ReactNode; label: string; color: string }) {
   return (
-    <a 
+    <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
@@ -284,35 +281,35 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
     <div className="w-full rounded-lg bg-white/5 border border-white/10 p-3 backdrop-blur-md flex gap-3">
       {/* Album Art */}
       <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-white/10">
-        <img src={songImage} alt="Album Art" className="h-full w-full object-cover animate-[spin_4s_linear_infinite]" style={{ animationPlayState: isPlaying ? 'running' : 'paused' }} />
+        <img src={songImage} alt="Album Art" className="h-full w-full object-cover" />
       </div>
 
       {/* Player Content */}
       <div className="flex flex-1 flex-col justify-center gap-1">
         {/* Song Info */}
         <div className="mb-1 flex items-center justify-between">
-           <div className="overflow-hidden">
-             <p className="text-xs font-bold text-white/90 truncate">SHAKE SUM</p>
-             <p className="text-[10px] text-white/50 truncate">Cutty Vibez</p>
-           </div>
-           
-           {/* Controls */}
-           <div className="flex items-center gap-2 text-white/80">
-              <button className="hover:text-white transition-colors">
-                <FaBackward size={10} />
-              </button>
-              
-              <button 
-                onClick={togglePlay}
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black hover:scale-105 transition-transform"
-              >
-                {isPlaying ? <FaPause size={8} /> : <FaPlay size={8} className="ml-0.5" />}
-              </button>
-              
-              <button className="hover:text-white transition-colors">
-                <FaForward size={10} />
-              </button>
-           </div>
+          <div className="overflow-hidden">
+            <p className="text-xs font-bold text-white/90 truncate">SHAKE SUM</p>
+            <p className="text-[10px] text-white/50 truncate">Cutty Vibez</p>
+          </div>
+
+          {/* Controls */}
+          <div className="flex items-center gap-2 text-white/80">
+            <button className="hover:text-white transition-colors">
+              <FaBackward size={10} />
+            </button>
+
+            <button
+              onClick={togglePlay}
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black hover:scale-105 transition-transform"
+            >
+              {isPlaying ? <FaPause size={8} /> : <FaPlay size={8} className="ml-0.5" />}
+            </button>
+
+            <button className="hover:text-white transition-colors">
+              <FaForward size={10} />
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}
