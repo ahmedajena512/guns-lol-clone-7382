@@ -13,33 +13,27 @@ import {
     FaForward,
     FaBackward,
     FaVolumeUp,
-    FaVolumeMute
+    FaVolumeMute,
+    FaLink
 } from "react-icons/fa";
 import { TypeAnimation } from "react-type-animation";
-import shakeSum from "../assets/shake_sum.mp3";
+import { getProfile, UserProfile, DEFAULT_PROFILE } from "../lib/services";
 
-// ==========================================
-// CONFIGURATION AREA
-// Change the URLs below to customize the site
-// ==========================================
-
-// 1. Background Image URL
-const BG_IMAGE_URL = "https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=2070&auto=format&fit=crop";
-
-// 2. Profile Avatar URL
-const PROFILE_AVATAR_URL = "https://cdn.discordapp.com/avatars/623142760240775168/76dc609952bafba97b5547809966a174.webp";
-
-// 3. Audio Source URL (mp3 file)
-const AUDIO_URL = shakeSum;
-
-// 4. Song Image URL (Album Art)
-const SONG_IMAGE_URL = "https://static.qobuz.com/images/covers/ib/hy/jsing19kfhyib_600.jpg";
-
-// ==========================================
+// Helper to resolve icon string to Component
+const IconMap: Record<string, any> = {
+    FaDiscord, FaGithub, FaTelegramPlane, FaSpotify,
+    FaFacebook, FaInstagram, FaPinterest, FaLink
+};
 
 export function Home() {
     const [entered, setEntered] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+
+    useEffect(() => {
+        // Fetch profile on mount
+        getProfile().then(data => setProfile(data)).catch(() => setProfile(DEFAULT_PROFILE));
+    }, []);
 
     const handleEnter = () => {
         setEntered(true);
@@ -49,12 +43,15 @@ export function Home() {
         }
     };
 
+    // Show nothing or a loading spinner until profile is loaded
+    if (!profile) return <div className="min-h-screen bg-black" />;
+
     return (
         <div className="relative min-h-screen w-full overflow-hidden bg-black text-white font-mono selection:bg-white selection:text-black">
             {/* Background with overlay */}
             <div
                 className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat opacity-40 grayscale-[50%]"
-                style={{ backgroundImage: `url(${BG_IMAGE_URL})` }}
+                style={{ backgroundImage: `url(${profile.backgroundUrl})` }}
             />
 
             {/* Moving gradient mesh / fog effect overlay */}
@@ -62,13 +59,14 @@ export function Home() {
             <div className="fixed inset-0 z-0 bg-black/60" />
 
             {/* Audio Element */}
-            <audio ref={audioRef} src={AUDIO_URL} loop />
+            {/* Use key to force reload if url changes */}
+            <audio ref={audioRef} src={profile.songUrl || DEFAULT_PROFILE.songUrl} loop key={profile.songUrl} />
 
             <AnimatePresence>
                 {!entered ? (
                     <EnterScreen key="enter" onEnter={handleEnter} />
                 ) : (
-                    <Profile key="profile" audioRef={audioRef} />
+                    <Profile key="profile" audioRef={audioRef} profile={profile} />
                 )}
             </AnimatePresence>
 
@@ -108,7 +106,16 @@ function EnterScreen({ onEnter }: { onEnter: () => void }) {
     );
 }
 
-function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | null> }) {
+function Profile({ audioRef, profile }: { audioRef: React.RefObject<HTMLAudioElement | null>, profile: UserProfile }) {
+    // Construct sequence for TypeAnimation
+    // [ "text", 2000, "text2", 2000 ]
+    const typeSequence: (string | number)[] = [];
+    profile.bio.forEach(line => {
+        typeSequence.push(line);
+        typeSequence.push(2000);
+    });
+    if (typeSequence.length === 0) typeSequence.push("Welcome", 2000);
+
     return (
         <motion.div
             className="relative z-10 flex min-h-screen items-center justify-center p-4"
@@ -127,7 +134,7 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
                             transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                         />
                         <img
-                            src={PROFILE_AVATAR_URL}
+                            src={profile.avatarUrl}
                             alt="Avatar"
                             className="relative h-32 w-32 rounded-full border-2 border-white/20 object-cover shadow-2xl"
                         />
@@ -137,21 +144,13 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
 
                     <div className="text-center space-y-2">
                         <h1 className="flex items-center justify-center gap-2 text-3xl font-bold text-white drop-shadow-md">
-                            Ahmed Ajena
+                            {profile.displayName}
                         </h1>
 
                         <div className="h-6 text-sm text-gray-300">
                             <TypeAnimation
-                                sequence={[
-                                    "Full Stack Developer",
-                                    2000,
-                                    "UI/UX Enthusiast",
-                                    2000,
-                                    "Gamer",
-                                    2000,
-                                    "Sleeping...",
-                                    2000
-                                ]}
+                                key={typeSequence.join("")} // Force re-render if sequence changes
+                                sequence={typeSequence}
                                 wrapper="span"
                                 speed={50}
                                 repeat={Infinity}
@@ -159,7 +158,7 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
                         </div>
 
                         <p className="mt-2 px-4 text-xs italic text-white/50">
-                            "Building things for the web. Breaking things for fun."
+                            "{profile.quote}"
                         </p>
                     </div>
                 </div>
@@ -169,23 +168,34 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
 
                 {/* Social Links */}
                 <div className="flex flex-wrap justify-center gap-4">
-                    <SocialLink href="https://discord.com/users/623142760240775168" icon={<FaDiscord />} label="Discord" color="hover:text-[#5865F2]" />
-                    <SocialLink href="https://t.me/ahmedAJ1" icon={<FaTelegramPlane />} label="Telegram" color="hover:text-[#229ED9]" />
-                    <SocialLink href="https://github.com/ahmedajena512" icon={<FaGithub />} label="GitHub" color="hover:text-white" />
-                    <SocialLink href="https://facebook.com/ahmedAJ512" icon={<FaFacebook />} label="Facebook" color="hover:text-[#1877F2]" />
-                    <SocialLink href="https://instagram.com/ahmedAJ512" icon={<FaInstagram />} label="Instagram" color="hover:text-[#E4405F]" />
-                    <SocialLink href="https://pinterest.com/ahmedajena512" icon={<FaPinterest />} label="Pinterest" color="hover:text-[#BD081C]" />
-                    <SocialLink href="https://open.spotify.com/playlist/55R3nZ3kGSGxXmh1yVJRqJ?si=vY7AKSfGQ_yCu8XpbsquQA" icon={<FaSpotify />} label="Spotify" color="hover:text-[#1DB954]" />
+                    {profile.socialLinks && profile.socialLinks.map((link, idx) => {
+                        const IconComponent = IconMap[link.icon as keyof typeof IconMap] || FaLink;
+                        // Add color mapping logic if desired, for now defaulting to white/hover white
+                        return (
+                            <SocialLink
+                                key={idx}
+                                href={link.url}
+                                icon={<IconComponent />}
+                                label={link.platform}
+                                color="hover:text-white"
+                            />
+                        );
+                    })}
                 </div>
 
                 {/* Sound Player */}
                 <div className="mt-8">
-                    <SoundPlayer audioRef={audioRef} songImage={SONG_IMAGE_URL} />
+                    <SoundPlayer
+                        audioRef={audioRef}
+                        songImage={DEFAULT_PROFILE.songUrl} // Or add album art to schema if needed
+                        title={profile.songTitle}
+                        artist={profile.songArtist}
+                    />
                 </div>
 
                 {/* Footer */}
                 <div className="mt-6 text-center text-[10px] text-white/20">
-                    © 2025 ahmedAJ512. All rights reserved.
+                    © 2025 {profile.displayName}. All rights reserved.
                 </div>
             </div>
         </motion.div>
@@ -209,7 +219,7 @@ function SocialLink({ href, icon, label, color }: { href: string; icon: React.Re
     );
 }
 
-function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAudioElement | null>, songImage: string }) {
+function SoundPlayer({ audioRef, songImage, title, artist }: { audioRef: React.RefObject<HTMLAudioElement | null>, songImage: string, title?: string, artist?: string }) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [progress, setProgress] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
@@ -306,12 +316,17 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
         return `${minutes}:${seconds.toString().padStart(2, "0")}`;
     };
 
+    // We use a fixed album art for now, or fetch from profile if we added it to schema
+    // For the "classic" look requested, user kept using static image. 
+    // We can pass songImage as prop if updated.
+    const ALBUM_ART = "https://static.qobuz.com/images/covers/ib/hy/jsing19kfhyib_600.jpg";
+
     return (
         <div className="w-full rounded-lg bg-white/5 border border-white/10 p-3 backdrop-blur-md flex gap-3">
             {/* Album Art (Spinning) */}
             <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-white/10">
                 <img
-                    src={songImage}
+                    src={ALBUM_ART}
                     alt="Album Art"
                     className="h-full w-full object-cover "
                 />
@@ -322,8 +337,8 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
                 {/* Song Info & Controls */}
                 <div className="mb-1 flex items-center justify-between">
                     <div className="overflow-hidden">
-                        <p className="text-xs font-bold text-white/90 truncate">SHAKE SUM</p>
-                        <p className="text-[10px] text-white/50 truncate">Cutty Vibez</p>
+                        <p className="text-xs font-bold text-white/90 truncate">{title || "SHAKE SUM"}</p>
+                        <p className="text-[10px] text-white/50 truncate">{artist || "Cutty Vibez"}</p>
                     </div>
 
                     {/* Controls */}
