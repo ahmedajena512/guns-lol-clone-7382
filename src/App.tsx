@@ -169,13 +169,13 @@ function Profile({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | nu
 
         {/* Social Links */}
         <div className="flex flex-wrap justify-center gap-4">
-          <SocialLink href="#" icon={<FaDiscord />} label="Discord" color="hover:text-[#5865F2]" />
-          <SocialLink href="#" icon={<FaTelegramPlane />} label="Telegram" color="hover:text-[#229ED9]" />
-          <SocialLink href="#" icon={<FaGithub />} label="GitHub" color="hover:text-white" />
-          <SocialLink href="#" icon={<FaFacebook />} label="Facebook" color="hover:text-[#1877F2]" />
-          <SocialLink href="#" icon={<FaInstagram />} label="Instagram" color="hover:text-[#E4405F]" />
-          <SocialLink href="#" icon={<FaPinterest />} label="Pinterest" color="hover:text-[#BD081C]" />
-          <SocialLink href="#" icon={<FaSpotify />} label="Spotify" color="hover:text-[#1DB954]" />
+          <SocialLink href="https://discord.com/users/623142760240775168" icon={<FaDiscord />} label="Discord" color="hover:text-[#5865F2]" />
+          <SocialLink href="https://t.me/ahmedAJ1" icon={<FaTelegramPlane />} label="Telegram" color="hover:text-[#229ED9]" />
+          <SocialLink href="https://github.com/ahmedajena512" icon={<FaGithub />} label="GitHub" color="hover:text-white" />
+          <SocialLink href="https://facebook.com/ahmedAJ512" icon={<FaFacebook />} label="Facebook" color="hover:text-[#1877F2]" />
+          <SocialLink href="https://instagram.com/ahmedAJ512" icon={<FaInstagram />} label="Instagram" color="hover:text-[#E4405F]" />
+          <SocialLink href="https://pinterest.com/ahmedajena512" icon={<FaPinterest />} label="Pinterest" color="hover:text-[#BD081C]" />
+          <SocialLink href="https://open.spotify.com/playlist/55R3nZ3kGSGxXmh1yVJRqJ?si=vY7AKSfGQ_yCu8XpbsquQA" icon={<FaSpotify />} label="Spotify" color="hover:text-[#1DB954]" />
         </div>
 
         {/* Sound Player */}
