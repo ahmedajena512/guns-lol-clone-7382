@@ -213,9 +213,7 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
+
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.3);
   const [isMuted, setIsMuted] = useState(false);
@@ -230,7 +228,7 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
     setCurrentTime(audio.currentTime || 0);
 
     const updateProgress = () => {
-      setCurrentTime(audio.currentTime);
+
       setProgress((audio.currentTime / audio.duration) * 100);
     };
 
