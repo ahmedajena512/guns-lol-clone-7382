@@ -6,12 +6,12 @@ import { getStorage } from "firebase/storage";
 // TODO: Replace with your Firebase project configuration
 // Get these from: console.firebase.google.com -> Project Settings
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyAxszsKynG_DDuS_Yy4lfUi23fR7d9Z53Q",
+    authDomain: "ahmedaj-portfolio.firebaseapp.com",
+    projectId: "ahmedaj-portfolio",
+    storageBucket: "ahmedaj-portfolio.firebasestorage.app",
+    messagingSenderId: "794862394682",
+    appId: "1:794862394682:web:7e231a91cc762a424bc403"
 };
 
 const app = initializeApp(firebaseConfig);
