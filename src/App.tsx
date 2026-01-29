@@ -16,7 +16,7 @@ import {
   FaVolumeMute
 } from "react-icons/fa";
 import { TypeAnimation } from "react-type-animation";
-import shakeSum from "./assets/shake_sum.flac";
+import shakeSum from "./assets/shake_sum.mp3";
 
 // ==========================================
 // CONFIGURATION AREA
