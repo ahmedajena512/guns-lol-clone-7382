@@ -308,26 +308,9 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
 
   return (
     <div className="w-full rounded-xl bg-black/60 border border-white/10 p-4 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.05)] flex gap-4 transition-all hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-      {/* Album Art with Visualizer Overlay */}
+      {/* Album Art */}
       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 shadow-lg group">
         <img src={songImage} alt="Album Art" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
-
-        {/* Simple CSS Visualizer Overlay */}
-        {isPlaying && (
-          <div className="absolute inset-0 flex items-end justify-center gap-0.5 bg-black/30 p-1">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="w-1.5 bg-white/80 rounded-t-sm"
-                style={{
-                  animation: `bounce ${0.4 + Math.random() * 0.5}s infinite ease-in-out alternate`,
-                  animationDelay: `${Math.random() * 0.5}s`,
-                  height: '20%'
-                }}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Player Content */}
