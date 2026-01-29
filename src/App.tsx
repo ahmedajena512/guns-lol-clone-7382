@@ -313,8 +313,7 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
         <img
           src={songImage}
           alt="Album Art"
-          className="h-full w-full object-cover animate-[spin_4s_linear_infinite]"
-          style={{ animationPlayState: isPlaying ? 'running' : 'paused' }}
+          className="h-full w-full object-cover "
         />
       </div>
 
