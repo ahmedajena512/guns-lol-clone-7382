@@ -11,7 +11,9 @@ import {
   FaPlay,
   FaPause,
   FaForward,
-  FaBackward
+  FaBackward,
+  FaVolumeUp,
+  FaVolumeMute
 } from "react-icons/fa";
 import { TypeAnimation } from "react-type-animation";
 import shakeSum from "./assets/shake_sum.flac";
@@ -211,7 +213,12 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.3);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -225,6 +232,12 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
     const updateProgress = () => {
       setCurrentTime(audio.currentTime);
       setProgress((audio.currentTime / audio.duration) * 100);
+    };
+
+    const handleVolumeChangeStr = (e: Event) => {
+      const target = e.target as HTMLAudioElement;
+      setVolume(target.volume);
+      setIsMuted(target.muted);
     };
 
     const handlePlay = () => setIsPlaying(true);
@@ -241,6 +254,7 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
     audio.addEventListener("pause", handlePause);
     audio.addEventListener("loadedmetadata", handleMetadata);
     audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("volumechange", handleVolumeChangeStr);
 
     return () => {
       audio.removeEventListener("timeupdate", updateProgress);
@@ -248,8 +262,25 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
       audio.removeEventListener("pause", handlePause);
       audio.removeEventListener("loadedmetadata", handleMetadata);
       audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("volumechange", handleVolumeChangeStr);
     };
   }, [audioRef]);
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseFloat(e.target.value);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume;
+      setVolume(newVolume);
+      setIsMuted(newVolume === 0);
+    }
+  };
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
+  };
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -278,52 +309,79 @@ function SoundPlayer({ audioRef, songImage }: { audioRef: React.RefObject<HTMLAu
   };
 
   return (
-    <div className="w-full rounded-lg bg-white/5 border border-white/10 p-3 backdrop-blur-md flex gap-3">
-      {/* Album Art */}
-      <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-white/10">
-        <img src={songImage} alt="Album Art" className="h-full w-full object-cover" />
+    <div className="w-full rounded-xl bg-black/60 border border-white/10 p-4 backdrop-blur-xl shadow-[0_0_20px_rgba(255,255,255,0.05)] flex gap-4 transition-all hover:border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+      {/* Album Art with Visualizer Overlay */}
+      <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 shadow-lg group">
+        <img src={songImage} alt="Album Art" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+
+        {/* Simple CSS Visualizer Overlay */}
+        {isPlaying && (
+          <div className="absolute inset-0 flex items-end justify-center gap-0.5 bg-black/30 p-1">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="w-1.5 bg-white/80 rounded-t-sm"
+                style={{
+                  animation: `bounce ${0.4 + Math.random() * 0.5}s infinite ease-in-out alternate`,
+                  animationDelay: `${Math.random() * 0.5}s`,
+                  height: '20%'
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Player Content */}
-      <div className="flex flex-1 flex-col justify-center gap-1">
-        {/* Song Info */}
-        <div className="mb-1 flex items-center justify-between">
-          <div className="overflow-hidden">
-            <p className="text-xs font-bold text-white/90 truncate">SHAKE SUM</p>
-            <p className="text-[10px] text-white/50 truncate">Cutty Vibez</p>
+      <div className="flex flex-1 flex-col justify-center gap-2">
+        {/* Top Row: Info & Controls */}
+        <div className="flex items-start justify-between">
+          <div className="overflow-hidden pr-2">
+            <div className="relative">
+              <p className={`text-sm font-bold text-white tracking-wide truncate ${isPlaying ? 'animate-pulse' : ''}`}>SHAKE SUM</p>
+            </div>
+            <p className="text-xs text-white/60 truncate hover:text-white/80 transition-colors cursor-default">Cutty Vibez</p>
           </div>
 
-          {/* Controls */}
-          <div className="flex items-center gap-2 text-white/80">
-            <button className="hover:text-white transition-colors">
-              <FaBackward size={10} />
-            </button>
-
+          {/* Playback Controls */}
+          <div className="flex items-center gap-3">
             <button
               onClick={togglePlay}
-              className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-black hover:scale-105 transition-transform"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-black hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.5)] transition-all active:scale-95"
             >
-              {isPlaying ? <FaPause size={8} /> : <FaPlay size={8} className="ml-0.5" />}
-            </button>
-
-            <button className="hover:text-white transition-colors">
-              <FaForward size={10} />
+              {isPlaying ? <FaPause size={10} /> : <FaPlay size={10} className="ml-0.5" />}
             </button>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] text-white/50 font-mono w-6 text-right">{formatTime(currentTime)}</span>
+        <div className="flex items-center gap-2 group">
+          <span className="text-[9px] text-white/40 font-mono w-7 text-right group-hover:text-white/80 transition-colors">{formatTime(currentTime)}</span>
           <input
             type="range"
             min="0"
             max="100"
             value={progress || 0}
             onChange={handleSeek}
-            className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-white/20 accent-white"
+            className="range-sm flex-1"
           />
-          <span className="text-[9px] text-white/50 font-mono w-6">{formatTime(duration)}</span>
+          <span className="text-[9px] text-white/40 font-mono w-7 group-hover:text-white/80 transition-colors">{formatTime(duration)}</span>
+        </div>
+
+        {/* Volume Control (Mini) */}
+        <div className="flex items-center gap-2 mt-1">
+          <button onClick={toggleMute} className="text-white/50 hover:text-white transition-colors">
+            {isMuted || volume === 0 ? <FaVolumeMute size={10} /> : <FaVolumeUp size={10} />}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={isMuted ? 0 : volume}
+            onChange={handleVolumeChange}
+            className="range-sm w-16 opacity-50 hover:opacity-100 transition-opacity"
+          />
         </div>
       </div>
     </div>
