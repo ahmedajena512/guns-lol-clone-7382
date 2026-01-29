@@ -19,8 +19,10 @@
     background: #555;
   }
 
+  html,
   body {
-    @apply antialiased;
+    @apply antialiased bg-black;
+    @apply overscroll-none;
   }
 }
 
