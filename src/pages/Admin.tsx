@@ -65,12 +65,12 @@ export function Admin() {
                         isActive={activeTab === "links"}
                         onClick={() => setActiveTab("links")}
                     />
-                    {/* <SidebarItem 
-            icon={<FaPalette />} 
-            label="Appearance" 
-            isActive={activeTab === "appearance"} 
-            onClick={() => setActiveTab("appearance")} 
-          /> */}
+                    <SidebarItem
+                        icon={<FaPalette />}
+                        label="Appearance"
+                        isActive={activeTab === "appearance"}
+                        onClick={() => setActiveTab("appearance")}
+                    />
                     <SidebarItem
                         icon={<FaMusic />}
                         label="Audio & Media"
@@ -93,7 +93,7 @@ export function Admin() {
                 <div className="max-w-4xl mx-auto">
                     {activeTab === "profile" && <ProfileForm profile={profile} onSave={handleUpdate} />}
                     {activeTab === "links" && <LinksForm profile={profile} onSave={handleUpdate} />}
-                    {/* {activeTab === "appearance" && <AppearanceForm profile={profile} onSave={handleUpdate} />} */}
+                    {activeTab === "appearance" && <AppearanceForm profile={profile} onSave={handleUpdate} />}
                     {activeTab === "media" && <MediaForm profile={profile} onSave={handleUpdate} />}
                 </div>
             </main>
@@ -117,6 +117,54 @@ function SidebarItem({ icon, label, isActive, onClick }: { icon: any, label: str
 }
 
 // --- Forms ---
+
+function AppearanceForm({ profile, onSave }: { profile: UserProfile, onSave: (data: Partial<UserProfile>) => void }) {
+    const [theme, setTheme] = useState(profile.theme || "cyberpunk");
+
+    const themes = [
+        { id: "cyberpunk", name: "Cyberpunk", desc: "Dark, neon, glassmorphism", color: "from-violet-600 to-indigo-600" },
+        { id: "minimal", name: "Minimal Dark", desc: "Clean, solid black, no distractions", color: "bg-neutral-800" },
+        { id: "polar", name: "Polar White", desc: "Light mode, crisp, modern", color: "bg-white text-black" },
+        { id: "sunset", name: "Sunset", desc: "Warm gradients, energetic", color: "from-orange-500 to-pink-500" }
+    ];
+
+    const handleSave = () => {
+        onSave({ theme });
+    };
+
+    return (
+        <div className="space-y-6">
+            <h2 className="text-2xl font-bold mb-6">Appearance</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {themes.map(t => (
+                    <button
+                        key={t.id}
+                        onClick={() => setTheme(t.id)}
+                        className={`relative p-4 rounded-xl border-2 transition-all text-left group overflow-hidden ${theme === t.id
+                                ? "border-indigo-500 bg-white/10"
+                                : "border-white/10 hover:border-white/30 bg-black/40"
+                            }`}
+                    >
+                        <div className={`h-24 rounded-lg mb-3 w-full bg-gradient-to-br ${t.color} opacity-80`} />
+                        <h3 className="font-bold text-lg">{t.name}</h3>
+                        <p className="text-sm text-white/50">{t.desc}</p>
+
+                        {theme === t.id && (
+                            <div className="absolute top-4 right-4 h-3 w-3 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            <div className="flex justify-end pt-4">
+                <button onClick={handleSave} className="bg-white text-black px-6 py-2 rounded-lg font-bold hover:bg-white/90 transition-colors flex items-center gap-2">
+                    <FaSave /> Save Theme
+                </button>
+            </div>
+        </div>
+    );
+}
 
 function ProfileForm({ profile, onSave }: { profile: UserProfile, onSave: (data: Partial<UserProfile>) => void }) {
     const [displayName, setDisplayName] = useState(profile.displayName);

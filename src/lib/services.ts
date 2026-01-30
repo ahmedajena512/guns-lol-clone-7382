@@ -8,6 +8,7 @@ export interface UserProfile {
     bio: string[]; // Array of strings for typewriter effect
     quote: string;
     themeColor: string;
+    theme: string; // "cyberpunk" | "minimal" | "polar" | "sunset"
     avatarUrl: string;
     backgroundUrl: string;
     songUrl: string;
@@ -28,6 +29,7 @@ export const DEFAULT_PROFILE: UserProfile = {
     bio: ["Full Stack Developer", "Gamer", "UI/UX Enthusiast"],
     quote: "Building things for the web. Breaking things for fun.",
     themeColor: "#000000",
+    theme: "cyberpunk",
     avatarUrl: "https://cdn.discordapp.com/avatars/623142760240775168/76dc609952bafba97b5547809966a174.webp",
     backgroundUrl: "https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=2070&auto=format&fit=crop",
     songUrl: "", // We'll handle the default import logic in the component if this is empty
