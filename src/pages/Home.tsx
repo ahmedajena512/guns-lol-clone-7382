@@ -28,27 +28,21 @@ const IconMap: Record<string, any> = {
 export function Home() {
     const [entered, setEntered] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const [profile, setProfile] = useState<UserProfile | null>(null);
+    // Initialize synchronously from cache or default to avoid initial null state (Blocking Render replaced with Optimistic UI)
+    const [profile, setProfile] = useState<UserProfile>(() => {
+        const cached = localStorage.getItem("user_profile");
+        return cached ? JSON.parse(cached) : DEFAULT_PROFILE;
+    });
 
     useEffect(() => {
-        // 1. Try to load from cache first for instant render
-        const cached = localStorage.getItem("user_profile");
-        if (cached) {
-            try {
-                setProfile(JSON.parse(cached));
-            } catch (e) {
-                console.error("Cache parse error", e);
-            }
-        }
-
-        // 2. Fetch fresh data regardless
+        // Fetch fresh data in background (SWR pattern)
         getProfile()
             .then(data => {
                 setProfile(data);
                 localStorage.setItem("user_profile", JSON.stringify(data));
             })
-            .catch(() => {
-                if (!cached) setProfile(DEFAULT_PROFILE);
+            .catch(error => {
+                console.warn("Background fetch failed, keeping cached/default data", error);
             });
     }, []);
 
@@ -59,41 +53,6 @@ export function Home() {
             audioRef.current.play().catch(e => console.log("Audio play failed:", e));
         }
     };
-
-    // Show default profile immediately if loading takes too long, or use a proper loader
-    if (!profile) return (
-        <div className="min-h-screen bg-black flex items-center justify-center font-mono">
-            <div className="w-64">
-                {/* Terminal Loader */}
-                <div className="mb-2 flex items-center justify-between text-xs text-white/50 border-b border-white/10 pb-1">
-                    <span>BOOT_SEQUENCE</span>
-                    <span>v1.0.4</span>
-                </div>
-                <div className="space-y-1 text-xs text-green-500">
-                    <TypeAnimation
-                        sequence={[
-                            "INITIALIZING SYSTEM...", 500,
-                            "LOADING ASSETS...", 500,
-                            "CONNECTING TO DATABASE...", 800,
-                            "DECRYPTING PROFILE DATA...", 500,
-                            "ACCESS GRANTED.", 1000
-                        ]}
-                        speed={75}
-                        cursor={false}
-                    />
-                </div>
-                {/* Progress Bar */}
-                <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                    <motion.div
-                        className="h-full bg-white"
-                        initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 3.5, ease: "easeInOut" }}
-                    />
-                </div>
-            </div>
-        </div>
-    );
 
     return (
         <div className="relative min-h-screen w-full overflow-hidden bg-black text-white font-mono selection:bg-white selection:text-black">
