@@ -35,7 +35,12 @@ export const DEFAULT_PROFILE: UserProfile = {
     songArtist: "Cutty Vibez",
     socialLinks: [
         { platform: "Discord", url: "https://discord.com/users/623142760240775168", icon: "FaDiscord" },
-        { platform: "GitHub", url: "https://github.com/ahmedajena512", icon: "FaGithub" }
+        { platform: "Telegram", url: "https://t.me/ahmedAJ1", icon: "FaTelegramPlane" },
+        { platform: "GitHub", url: "https://github.com/ahmedajena512", icon: "FaGithub" },
+        { platform: "Facebook", url: "https://facebook.com/ahmedAJ512", icon: "FaFacebook" },
+        { platform: "Instagram", url: "https://instagram.com/ahmedAJ512", icon: "FaInstagram" },
+        { platform: "Pinterest", url: "https://pinterest.com/ahmedajena512", icon: "FaPinterest" },
+        { platform: "Spotify", url: "https://open.spotify.com/playlist/55R3nZ3kGSGxXmh1yVJRqJ?si=vY7AKSfGQ_yCu8XpbsquQA", icon: "FaSpotify" }
     ]
 };
 

@@ -106,8 +106,8 @@ function SidebarItem({ icon, label, isActive, onClick }: { icon: any, label: str
         <button
             onClick={onClick}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${isActive
-                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
-                    : "text-white/60 hover:bg-white/5 hover:text-white"
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20"
+                : "text-white/60 hover:bg-white/5 hover:text-white"
                 }`}
         >
             {icon}
@@ -176,11 +176,13 @@ function ProfileForm({ profile, onSave }: { profile: UserProfile, onSave: (data:
 function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: Partial<UserProfile>) => void }) {
     const [links, setLinks] = useState(profile.socialLinks || []);
 
-    // Helper to map simplified platform names to icon keys (for display/edit logic if needed)
-    // For now, we mainly edit URL and Platform Name.
+    const ICONS = [
+        "FaDiscord", "FaTelegramPlane", "FaGithub", "FaFacebook",
+        "FaInstagram", "FaPinterest", "FaSpotify", "FaLink"
+    ];
 
     const addLink = () => {
-        setLinks([...links, { platform: "New Link", url: "", icon: "FaLink" }]);
+        setLinks([...links, { platform: "", url: "", icon: "FaLink" }]);
     };
 
     const removeLink = (index: number) => {
@@ -192,6 +194,19 @@ function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
     const updateLink = (index: number, field: keyof typeof links[0], value: string) => {
         const newLinks = [...links];
         newLinks[index] = { ...newLinks[index], [field]: value };
+
+        // Auto-detect icon if platform name matches
+        if (field === "platform") {
+            const lowerVal = value.toLowerCase();
+            if (lowerVal.includes("discord")) newLinks[index].icon = "FaDiscord";
+            else if (lowerVal.includes("telegram")) newLinks[index].icon = "FaTelegramPlane";
+            else if (lowerVal.includes("github")) newLinks[index].icon = "FaGithub";
+            else if (lowerVal.includes("face")) newLinks[index].icon = "FaFacebook";
+            else if (lowerVal.includes("insta")) newLinks[index].icon = "FaInstagram";
+            else if (lowerVal.includes("pin")) newLinks[index].icon = "FaPinterest";
+            else if (lowerVal.includes("spot")) newLinks[index].icon = "FaSpotify";
+        }
+
         setLinks(newLinks);
     };
 
@@ -205,16 +220,24 @@ function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
             <div className="space-y-3">
                 {links.map((link, idx) => (
                     <div key={idx} className="flex gap-2 items-center bg-white/5 p-3 rounded-lg border border-white/10">
+                        <select
+                            value={link.icon}
+                            onChange={e => updateLink(idx, "icon", e.target.value)}
+                            className="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none focus:border-indigo-500 text-sm w-32"
+                        >
+                            {ICONS.map(icon => <option key={icon} value={icon}>{icon.replace("Fa", "")}</option>)}
+                        </select>
+
                         <input
                             value={link.platform}
                             onChange={e => updateLink(idx, "platform", e.target.value)}
-                            placeholder="Platform (e.g. Discord)"
+                            placeholder="Platform"
                             className="bg-transparent border-b border-white/20 px-2 py-1 outline-none focus:border-indigo-500 w-1/3"
                         />
                         <input
                             value={link.url}
                             onChange={e => updateLink(idx, "url", e.target.value)}
-                            placeholder="URL (https://...)"
+                            placeholder="URL"
                             className="bg-transparent border-b border-white/20 px-2 py-1 outline-none focus:border-indigo-500 flex-1"
                         />
                         <button onClick={() => removeLink(idx)} className="text-red-400 hover:text-red-300 p-2">
