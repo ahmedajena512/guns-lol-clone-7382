@@ -9,21 +9,30 @@ import { getProfile, updateProfile, uploadFile, UserProfile, DEFAULT_PROFILE } f
 export function Admin() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("profile");
-    const [profile, setProfile] = useState<UserProfile>(DEFAULT_PROFILE);
-    const [loading, setLoading] = useState(true);
+    // Initialize from cache or default for instant load
+    const [profile, setProfile] = useState<UserProfile>(() => {
+        const cached = localStorage.getItem("user_profile");
+        return cached ? JSON.parse(cached) : DEFAULT_PROFILE;
+    });
+
+    // "loading" now means "syncing in background"
+    const [isSyncing, setIsSyncing] = useState(false);
 
     useEffect(() => {
+        // Trigger background fetch
         loadProfile();
     }, []);
 
     const loadProfile = async () => {
+        setIsSyncing(true);
         try {
             const data = await getProfile();
             setProfile(data);
+            localStorage.setItem("user_profile", JSON.stringify(data));
         } catch (error) {
-            toast.error("Failed to load profile");
+            toast.error("Failed to sync profile");
         } finally {
-            setLoading(false);
+            setIsSyncing(false);
         }
     };
 
@@ -42,15 +51,18 @@ export function Admin() {
         }
     };
 
-    if (loading) return <div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>;
+    // Blocking loader removed in favor of Optimistic UI
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white flex">
             {/* Sidebar */}
             <aside className="w-64 border-r border-white/10 p-6 flex flex-col bg-black">
-                <h1 className="text-2xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">
-                    Admin Panel
-                </h1>
+                <div className="flex items-center justify-between mb-8">
+                    <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">
+                        Admin Panel
+                    </h1>
+                    {isSyncing && <span className="text-xs text-white/30 animate-pulse">Syncing...</span>}
+                </div>
 
                 <nav className="flex-1 space-y-2">
                     <SidebarItem
@@ -142,8 +154,8 @@ function AppearanceForm({ profile, onSave }: { profile: UserProfile, onSave: (da
                         key={t.id}
                         onClick={() => setTheme(t.id)}
                         className={`relative p-4 rounded-xl border-2 transition-all text-left group overflow-hidden ${theme === t.id
-                                ? "border-indigo-500 bg-white/10"
-                                : "border-white/10 hover:border-white/30 bg-black/40"
+                            ? "border-indigo-500 bg-white/10"
+                            : "border-white/10 hover:border-white/30 bg-black/40"
                             }`}
                     >
                         <div className={`h-24 rounded-lg mb-3 w-full bg-gradient-to-br ${t.color} opacity-80`} />
