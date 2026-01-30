@@ -1,6 +1,30 @@
+import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    FaDiscord,
+    FaGithub,
+    FaTelegramPlane,
+    FaSpotify,
+    FaFacebook,
+    FaInstagram,
+    FaPinterest,
+    FaPlay,
+    FaPause,
+    FaForward,
+    FaBackward,
+    FaVolumeUp,
+    FaVolumeMute,
+    FaLink
+} from "react-icons/fa";
+import { TypeAnimation } from "react-type-animation";
+import { getProfile, UserProfile, DEFAULT_PROFILE } from "../lib/services";
 import defaultSong from "../assets/shake_sum.mp3";
 
-// ... (imports)
+// Helper to resolve icon string to Component
+const IconMap: Record<string, any> = {
+    FaDiscord, FaGithub, FaTelegramPlane, FaSpotify,
+    FaFacebook, FaInstagram, FaPinterest, FaLink
+};
 
 export function Home() {
     const [entered, setEntered] = useState(false);
