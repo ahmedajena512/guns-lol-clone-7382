@@ -31,8 +31,25 @@ export function Home() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
 
     useEffect(() => {
-        // Fetch profile on mount
-        getProfile().then(data => setProfile(data)).catch(() => setProfile(DEFAULT_PROFILE));
+        // 1. Try to load from cache first for instant render
+        const cached = localStorage.getItem("user_profile");
+        if (cached) {
+            try {
+                setProfile(JSON.parse(cached));
+            } catch (e) {
+                console.error("Cache parse error", e);
+            }
+        }
+
+        // 2. Fetch fresh data regardless
+        getProfile()
+            .then(data => {
+                setProfile(data);
+                localStorage.setItem("user_profile", JSON.stringify(data));
+            })
+            .catch(() => {
+                if (!cached) setProfile(DEFAULT_PROFILE);
+            });
     }, []);
 
     const handleEnter = () => {
@@ -43,8 +60,40 @@ export function Home() {
         }
     };
 
-    // Show nothing or a loading spinner until profile is loaded
-    if (!profile) return <div className="min-h-screen bg-black" />;
+    // Show default profile immediately if loading takes too long, or use a proper loader
+    if (!profile) return (
+        <div className="min-h-screen bg-black flex items-center justify-center font-mono">
+            <div className="w-64">
+                {/* Terminal Loader */}
+                <div className="mb-2 flex items-center justify-between text-xs text-white/50 border-b border-white/10 pb-1">
+                    <span>BOOT_SEQUENCE</span>
+                    <span>v1.0.4</span>
+                </div>
+                <div className="space-y-1 text-xs text-green-500">
+                    <TypeAnimation
+                        sequence={[
+                            "INITIALIZING SYSTEM...", 500,
+                            "LOADING ASSETS...", 500,
+                            "CONNECTING TO DATABASE...", 800,
+                            "DECRYPTING PROFILE DATA...", 500,
+                            "ACCESS GRANTED.", 1000
+                        ]}
+                        speed={75}
+                        cursor={false}
+                    />
+                </div>
+                {/* Progress Bar */}
+                <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                    <motion.div
+                        className="h-full bg-white"
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        transition={{ duration: 3.5, ease: "easeInOut" }}
+                    />
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="relative min-h-screen w-full overflow-hidden bg-black text-white font-mono selection:bg-white selection:text-black">
