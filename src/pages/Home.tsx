@@ -115,141 +115,142 @@ function EnterScreen({ onEnter }: { onEnter: () => void }) {
     );
 }
 
-// --- Theme Logic ---
-const getThemeStyles = (theme: string) => {
-    switch (theme) {
-        case "minimal":
-            return {
-                container: "bg-[#050505]",
-                overlay: "hidden", // No fancy overlay
-                card: "bg-black border border-white/20 shadow-none",
-                text: "text-white",
-                accent: "bg-white",
-                gradient: "hidden" // No spinning gradient
-            };
-        case "polar":
-            return {
-                container: "bg-gray-100",
-                overlay: "hidden",
-                card: "bg-white/80 border border-black/5 shadow-xl text-black backdrop-blur-md",
-                text: "text-black",
-                subtext: "text-gray-600",
-                accent: "bg-black",
-                gradient: "hidden"
-            };
-        case "sunset":
-            return {
-                container: "bg-orange-900",
-                overlay: "bg-gradient-to-br from-orange-500/20 to-purple-600/20 mix-blend-overlay",
-                card: "bg-black/30 border border-white/20 backdrop-blur-md shadow-[0_0_50px_rgba(255,100,0,0.3)]",
-                text: "text-white",
-                accent: "bg-gradient-to-r from-orange-500 to-purple-600",
-                gradient: "from-orange-500 to-purple-600"
-            };
-        case "cyberpunk":
-        default:
-            return {
-                container: "bg-black",
-                overlay: "bg-gradient-to-t from-black via-transparent to-black opacity-80",
-                card: "bg-black/40 border border-white/10 backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.5)]",
-                text: "text-white",
-                accent: "bg-green-500",
-                gradient: "from-violet-600 to-indigo-600"
-            };
-    }
-};
+function Profile({ audioRef, profile }: { audioRef: React.RefObject<HTMLAudioElement | null>; profile: UserProfile }) {
+    // --- Theme Logic ---
+    const getThemeStyles = (theme: string) => {
+        switch (theme) {
+            case "minimal":
+                return {
+                    container: "bg-[#050505]",
+                    overlay: "hidden", // No fancy overlay
+                    card: "bg-black border border-white/20 shadow-none",
+                    text: "text-white",
+                    accent: "bg-white",
+                    gradient: "hidden" // No spinning gradient
+                };
+            case "polar":
+                return {
+                    container: "bg-gray-100",
+                    overlay: "hidden",
+                    card: "bg-white/80 border border-black/5 shadow-xl text-black backdrop-blur-md",
+                    text: "text-black",
+                    subtext: "text-gray-600",
+                    accent: "bg-black",
+                    gradient: "hidden"
+                };
+            case "sunset":
+                return {
+                    container: "bg-orange-900",
+                    overlay: "bg-gradient-to-br from-orange-500/20 to-purple-600/20 mix-blend-overlay",
+                    card: "bg-black/30 border border-white/20 backdrop-blur-md shadow-[0_0_50px_rgba(255,100,0,0.3)]",
+                    text: "text-white",
+                    accent: "bg-gradient-to-r from-orange-500 to-purple-600",
+                    gradient: "from-orange-500 to-purple-600"
+                };
+            case "cyberpunk":
+            default:
+                return {
+                    container: "bg-black",
+                    overlay: "bg-gradient-to-t from-black via-transparent to-black opacity-80",
+                    card: "bg-black/40 border border-white/10 backdrop-blur-xl shadow-[0_0_40px_rgba(0,0,0,0.5)]",
+                    text: "text-white",
+                    accent: "bg-green-500",
+                    gradient: "from-violet-600 to-indigo-600"
+                };
+        }
+    };
 
-const styles = getThemeStyles(profile.theme || "cyberpunk");
-const isPolar = profile.theme === "polar"; // Helper for text contrast
+    const styles = getThemeStyles(profile.theme || "cyberpunk");
+    const isPolar = profile.theme === "polar"; // Helper for text contrast
 
-return (
-    <motion.div
-        className={`relative z-10 flex min-h-screen items-center justify-center p-4 ${styles.text}`}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-    >
-        <div className={`w-full max-w-md rounded-xl p-6 ${styles.card}`}>
+    return (
+        <motion.div
+            className={`relative z-10 flex min-h-screen items-center justify-center p-4 ${styles.text}`}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+        >
+            <div className={`w-full max-w-md rounded-xl p-6 ${styles.card}`}>
 
-            {/* Profile Header */}
-            <div className="flex flex-col items-center">
-                <div className="relative mb-4">
-                    {/* Spinning Gradient - conditionally rendered */}
-                    {styles.gradient !== "hidden" && (
-                        <motion.div
-                            className={`absolute -inset-1 rounded-full bg-gradient-to-r ${styles.gradient} opacity-75 blur`}
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                {/* Profile Header */}
+                <div className="flex flex-col items-center">
+                    <div className="relative mb-4">
+                        {/* Spinning Gradient - conditionally rendered */}
+                        {styles.gradient !== "hidden" && (
+                            <motion.div
+                                className={`absolute -inset-1 rounded-full bg-gradient-to-r ${styles.gradient} opacity-75 blur`}
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                            />
+                        )}
+                        <img
+                            src={profile.avatarUrl}
+                            alt="Avatar"
+                            className={`relative h-32 w-32 rounded-full object-cover shadow-2xl ${isPolar ? "border-2 border-black/10" : "border-2 border-white/20"}`}
                         />
-                    )}
-                    <img
-                        src={profile.avatarUrl}
-                        alt="Avatar"
-                        className={`relative h-32 w-32 rounded-full object-cover shadow-2xl ${isPolar ? "border-2 border-black/10" : "border-2 border-white/20"}`}
-                    />
-                    {/* Status Indicator */}
-                    <div className={`absolute bottom-2 right-2 h-4 w-4 rounded-full ${styles.accent} border-2 ${isPolar ? "border-white" : "border-black"}`} title="Online" />
-                </div>
-
-                <div className="text-center space-y-2">
-                    <h1 className="flex items-center justify-center gap-2 text-3xl font-bold drop-shadow-md">
-                        {profile.displayName}
-                    </h1>
-
-                    <div className={`h-6 text-sm ${isPolar ? "text-gray-600" : "text-gray-300"}`}>
-                        <TypeAnimation
-                            key={typeSequence.join("")} // Force re-render if sequence changes
-                            sequence={typeSequence}
-                            wrapper="span"
-                            speed={50}
-                            repeat={Infinity}
-                        />
+                        {/* Status Indicator */}
+                        <div className={`absolute bottom-2 right-2 h-4 w-4 rounded-full ${styles.accent} border-2 ${isPolar ? "border-white" : "border-black"}`} title="Online" />
                     </div>
 
-                    <p className={`mt-2 px-4 text-xs italic ${isPolar ? "text-black/50" : "text-white/50"}`}>
-                        "{profile.quote}"
-                    </p>
+                    <div className="text-center space-y-2">
+                        <h1 className="flex items-center justify-center gap-2 text-3xl font-bold drop-shadow-md">
+                            {profile.displayName}
+                        </h1>
+
+                        <div className={`h-6 text-sm ${isPolar ? "text-gray-600" : "text-gray-300"}`}>
+                            <TypeAnimation
+                                key={typeSequence.join("")} // Force re-render if sequence changes
+                                sequence={typeSequence}
+                                wrapper="span"
+                                speed={50}
+                                repeat={Infinity}
+                            />
+                        </div>
+
+                        <p className={`mt-2 px-4 text-xs italic ${isPolar ? "text-black/50" : "text-white/50"}`}>
+                            "{profile.quote}"
+                        </p>
+                    </div>
+                </div>
+
+                {/* Divider */}
+                <div className={`my-6 h-px w-full ${isPolar ? "bg-black/10" : "bg-gradient-to-r from-transparent via-white/20 to-transparent"}`} />
+
+                {/* Social Links */}
+                <div className="flex flex-wrap justify-center gap-4">
+                    {profile.socialLinks && profile.socialLinks.map((link, idx) => {
+                        const IconComponent = IconMap[link.icon as keyof typeof IconMap] || FaLink;
+                        return (
+                            <SocialLink
+                                key={idx}
+                                href={link.url}
+                                icon={<IconComponent />}
+                                label={link.platform}
+                                color={isPolar ? "text-black/60 hover:text-black hover:bg-black/5" : "text-gray-400 hover:text-white hover:bg-white/10"}
+                                isPolar={isPolar}
+                            />
+                        );
+                    })}
+                </div>
+
+                {/* Sound Player */}
+                <div className="mt-8">
+                    <SoundPlayer
+                        audioRef={audioRef}
+                        songImage={DEFAULT_PROFILE.songUrl}
+                        title={profile.songTitle}
+                        artist={profile.songArtist}
+                        isPolar={isPolar}
+                    />
+                </div>
+
+                {/* Footer */}
+                <div className={`mt-6 text-center text-[10px] ${isPolar ? "text-black/30" : "text-white/20"}`}>
+                    © 2025 {profile.displayName}. All rights reserved.
                 </div>
             </div>
-
-            {/* Divider */}
-            <div className={`my-6 h-px w-full ${isPolar ? "bg-black/10" : "bg-gradient-to-r from-transparent via-white/20 to-transparent"}`} />
-
-            {/* Social Links */}
-            <div className="flex flex-wrap justify-center gap-4">
-                {profile.socialLinks && profile.socialLinks.map((link, idx) => {
-                    const IconComponent = IconMap[link.icon as keyof typeof IconMap] || FaLink;
-                    return (
-                        <SocialLink
-                            key={idx}
-                            href={link.url}
-                            icon={<IconComponent />}
-                            label={link.platform}
-                            color={isPolar ? "text-black/60 hover:text-black hover:bg-black/5" : "text-gray-400 hover:text-white hover:bg-white/10"}
-                            isPolar={isPolar}
-                        />
-                    );
-                })}
-            </div>
-
-            {/* Sound Player */}
-            <div className="mt-8">
-                <SoundPlayer
-                    audioRef={audioRef}
-                    songImage={DEFAULT_PROFILE.songUrl}
-                    title={profile.songTitle}
-                    artist={profile.songArtist}
-                    isPolar={isPolar}
-                />
-            </div>
-
-            {/* Footer */}
-            <div className={`mt-6 text-center text-[10px] ${isPolar ? "text-black/30" : "text-white/20"}`}>
-                © 2025 {profile.displayName}. All rights reserved.
-            </div>
-        </div>
-    </motion.div>
-);
+        </motion.div>
+    );
 }
 
 function SocialLink({ href, icon, label, color, isPolar }: { href: string; icon: React.ReactNode; label: string; color: string, isPolar: boolean }) {
