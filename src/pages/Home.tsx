@@ -163,6 +163,9 @@ function Profile({ audioRef, profile }: { audioRef: React.RefObject<HTMLAudioEle
     const styles = getThemeStyles(profile.theme || "cyberpunk");
     const isPolar = profile.theme === "polar"; // Helper for text contrast
 
+    // Build type animation sequence from bio lines
+    const typeSequence = profile.bioLines?.flatMap((line: string) => [line, 2000]) || ["Welcome", 2000];
+
     return (
         <motion.div
             className={`relative z-10 flex min-h-screen items-center justify-center p-4 ${styles.text}`}
