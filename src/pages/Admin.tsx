@@ -43,15 +43,17 @@ export function Admin() {
 
     const handleUpdate = async (updates: Partial<UserProfile>) => {
         try {
+            // Optimistically update local state
+            setProfile((prev: UserProfile) => ({ ...prev, ...updates }));
+
+            // Background update
             await updateProfile(updates);
-            setProfile(prev => ({ ...prev, ...updates }));
             toast.success("Changes saved!");
         } catch (error) {
             toast.error("Failed to save changes");
+            // Optionally revert local state here if needed
         }
     };
-
-    // Blocking loader removed in favor of Optimistic UI
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] text-white flex">
@@ -201,7 +203,7 @@ function ProfileForm({ profile, onSave }: { profile: UserProfile, onSave: (data:
                     <label className="block text-sm font-medium text-white/60 mb-1">Display Name</label>
                     <input
                         value={displayName}
-                        onChange={e => setDisplayName(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDisplayName(e.target.value)}
                         className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-indigo-500 outline-none"
                     />
                 </div>
@@ -210,7 +212,7 @@ function ProfileForm({ profile, onSave }: { profile: UserProfile, onSave: (data:
                     <label className="block text-sm font-medium text-white/60 mb-1">Bio (Typewriter lines)</label>
                     <textarea
                         value={bio}
-                        onChange={e => setBio(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBio(e.target.value)}
                         className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-indigo-500 outline-none h-32"
                     />
                     <p className="text-xs text-white/40 mt-1">One line per entry (separated by new line)</p>
@@ -220,7 +222,7 @@ function ProfileForm({ profile, onSave }: { profile: UserProfile, onSave: (data:
                     <label className="block text-sm font-medium text-white/60 mb-1">Quote</label>
                     <input
                         value={quote}
-                        onChange={e => setQuote(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuote(e.target.value)}
                         className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white focus:border-indigo-500 outline-none"
                     />
                 </div>
@@ -251,7 +253,7 @@ function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
         setLinks(newLinks);
     };
 
-    const updateLink = (index: number, field: keyof typeof links[0], value: string) => {
+    const updateLink = (index: number, field: string, value: string) => {
         const newLinks = [...links];
         newLinks[index] = { ...newLinks[index], [field]: value };
 
@@ -282,7 +284,7 @@ function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
                     <div key={idx} className="flex gap-2 items-center bg-white/5 p-3 rounded-lg border border-white/10">
                         <select
                             value={link.icon}
-                            onChange={e => updateLink(idx, "icon", e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updateLink(idx, "icon", e.target.value)}
                             className="bg-black/40 border border-white/20 rounded px-2 py-1 outline-none focus:border-indigo-500 text-sm w-32"
                         >
                             {ICONS.map(icon => <option key={icon} value={icon}>{icon.replace("Fa", "")}</option>)}
@@ -290,13 +292,13 @@ function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
 
                         <input
                             value={link.platform}
-                            onChange={e => updateLink(idx, "platform", e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLink(idx, "platform", e.target.value)}
                             placeholder="Platform"
                             className="bg-transparent border-b border-white/20 px-2 py-1 outline-none focus:border-indigo-500 w-1/3"
                         />
                         <input
                             value={link.url}
-                            onChange={e => updateLink(idx, "url", e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateLink(idx, "url", e.target.value)}
                             placeholder="URL"
                             className="bg-transparent border-b border-white/20 px-2 py-1 outline-none focus:border-indigo-500 flex-1"
                         />
@@ -316,7 +318,7 @@ function LinksForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
                 </button>
             </div>
         </div>
-    )
+    );
 }
 
 function MediaForm({ profile, onSave }: { profile: UserProfile, onSave: (data: Partial<UserProfile>) => void }) {
@@ -381,5 +383,5 @@ function MediaForm({ profile, onSave }: { profile: UserProfile, onSave: (data: P
                 </div>
             </div>
         </div>
-    )
+    );
 }
